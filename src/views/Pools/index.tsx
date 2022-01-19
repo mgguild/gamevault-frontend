@@ -259,7 +259,7 @@ const Pools: React.FC = () => {
                 Pool Staking
               </Text>
               <Text color="text" bold style={isMobile ? { fontSize: '17px' } : { fontSize: '27px' }}>
-                Stake tokens and earn!
+                Earn MGG and other tokens just by Staking!
               </Text>
             </Flex>
             <InfoBox style={{ width: '100%' }} margin="20px 0px 0px 0px" justifyContent="space-between">
@@ -271,7 +271,7 @@ const Pools: React.FC = () => {
               </Flex>
               <Flex flexDirection="column">
                 <Text fontSize="17px" bold color={theme.colors.MGG_accent2}>
-                  Total value Locked
+                  Total Value Locked
                 </Text>
                 <Text fontSize="20px">- USD</Text>
               </Flex>

@@ -422,7 +422,7 @@ const Farms: React.FC = () => {
              <Text fontSize='20px'> {totalStaked} MGG</Text>
            </Flex>
            <Flex flexDirection="column">
-             <Text fontSize='17px' bold color={theme.colors.MGG_accent2}>Total value Locked</Text>
+             <Text fontSize='17px' bold color={theme.colors.MGG_accent2}>Total Value Locked</Text>
              <Text fontSize='20px'>- USD</Text>
            </Flex>
            <Flex flexDirection="column">

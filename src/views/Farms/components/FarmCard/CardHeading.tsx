@@ -42,7 +42,7 @@ const CardHeading: React.FC<ExpandableSectionProps> = ({
   pairToken
 }) => {
   return (
-    <Wrapper justifyContent="space-between" alignItems="center" mb="12px">
+    <Wrapper justifyContent="space-between" alignItems="center">
       <Flex flexDirection="row" alignItems="">
         <Heading  mb="4px" style={{textAlign: 'left'}}>Stake <br/> {lpLabel.split(' ')[0]} <br /> Earn {rewardToken}</Heading>
       </Flex>

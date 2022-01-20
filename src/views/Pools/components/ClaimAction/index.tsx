@@ -11,7 +11,7 @@ const ClaimAction: React.FC = () => {
         <ActionContainer style={{ margin: '10px 0' }}>
       <ActionTitles>
         <Text bold textTransform='uppercase' color={theme.colors.MGG_accent2} fontSize='12px' pr='4px'>
-          test
+          MGG
         </Text>
         <Text bold textTransform='uppercase' color='textSubtle' fontSize='12px'>
           Earned
@@ -19,11 +19,11 @@ const ClaimAction: React.FC = () => {
       </ActionTitles>
       <ActionContent>
         <div>
-          <Earned>123</Earned>
+          <Earned>0</Earned>
         </div>
         <Button
           style={{borderRadius: '3px', height: '40px'}}
-
+          disabled
           ml='4px'
         >
           Claim

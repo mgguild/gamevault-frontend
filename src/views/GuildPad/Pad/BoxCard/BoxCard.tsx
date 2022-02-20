@@ -223,7 +223,7 @@ const BoxCard: React.FC<{ guildpad: Guildpad, imgProps: ImgProps, userDataLoaded
     }
   }, [account, guildpad, showNotInWhitelistModal, whitelistModalShowed, userDataLoaded])
 
-  const hasRemainingSupply = (guildpad.boxInfo[rarityId].supply - guildpad.boxInfo[rarityId].sold) > 0
+  const hasRemainingSupply = (guildpad.boxInfo[rarityId].supply - guildpad.boxInfo[rarityId].sold) > 1 // SET TO 1 cause of last 1 box Problem
   return (
     <GCard>
       <div style={{ padding: '1rem 1rem' }}>

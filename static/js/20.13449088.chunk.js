@@ -1,2 +1,0 @@
-(this["webpackJsonpgamevault-frontend"]=this["webpackJsonpgamevault-frontend"]||[]).push([[20],{2042:function(t,a,e){"use strict";e.r(a);var n=e(1923);a.default=n.Bar}}]);
-//# sourceMappingURL=20.13449088.chunk.js.map

@@ -38,6 +38,7 @@ export const DEFAULT_GAS_PRICE = 5
 export const TESTNET_CHAIN_ID = '97'
 export const MAINNET_CHAIN_ID = '56'
 export const EPOCH_PER_YEAR = 31556926
+export const EPOCH_PER_DAY = 86400
 export const SPARKSWAP_API = 'https://api.pancakeswap.info/api/v2/'
 export const API_ASSETS = 'tokens'
 export const API_SUMMARY = 'summary'

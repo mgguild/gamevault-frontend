@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState, useContext, useMemo } from 'react'
+import React, { Dispatch, SetStateAction, useState, useContext, useMemo, useCallback } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import { Grid } from '@mui/material'
 import { Flex, Text, Button, Input } from '@metagg/mgg-uikit'
@@ -62,10 +62,10 @@ const Component: React.FC<ComponentProps> = ({
   const userTotalStaked = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakedBalance), currentStake.stakingToken.decimals)) : new BigNumber(0)
   const userStakingBal = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakingTokenBalance), currentStake.stakingToken.decimals)) : new BigNumber(0)
   const [tierId, setTierId] = useState(null)
-  console.log('userTotalStaked: ', userTotalStaked)
 
-  console.log('tiers', currentStake.stakeTiers)
-  console.log('tiers1', intoDays(currentStake.stakeTiers.tier1.duration))
+  const [toStakeTkn, setTknStake] = useState('')
+  const [percentage, setPercentage] = useState('0.0')
+  const [estimatedProfit, setEstimatedProfit] = useState('-')
 
   const tiersDuration = useMemo(() => Object.keys(currentStake.stakeTiers).map((tier) => {
     return intoDays(currentStake.stakeTiers[tier].duration)
@@ -75,7 +75,30 @@ const Component: React.FC<ComponentProps> = ({
     return getBalanceNumber(new BigNumber(currentStake.stakeTiers[tier].apyPerSec).times(new BigNumber(EPOCH_PER_YEAR)), currentStake.stakingToken.decimals).toFixed(0)
   }), [currentStake])
 
-  console.log('APYs: ', APYs)
+  const handleChange = useCallback(
+    (e: React.FormEvent<HTMLInputElement>) => {
+      if (e.currentTarget.validity.valid) {
+        const val = e.currentTarget.value.replace(/,/g, '.')
+        setTknStake(val)
+        setEstimatedProfit(new BigNumber(val).multipliedBy(new BigNumber(percentage)).toString())
+      }
+    },
+    [setTknStake, percentage],
+  )
+
+  const handleTierChange = useCallback((index: number) => {
+    dayFunction(tiersDuration[index]);
+    setTierId(index)
+    setPercentage(new BigNumber(APYs[index]).div(new BigNumber(100)).toString())
+  },
+  [ // dependencies
+    dayFunction,
+    tiersDuration,
+    setPercentage,
+    setTierId,
+    APYs
+  ])
+
 
   return (
     <>
@@ -84,7 +107,7 @@ const Component: React.FC<ComponentProps> = ({
           {[0, 1, 2, 3].map((index) => (
             <>
               <Grid item xs={12} sm={3} md={3}>
-                <ButtonSM fullWidth onClick={() => {dayFunction(tiersDuration[index]); setTierId(index)}}>
+                <ButtonSM fullWidth onClick={() => handleTierChange(index)}>
                   {`${tiersDuration[index]} Days`}
                 </ButtonSM>
               </Grid>
@@ -95,16 +118,27 @@ const Component: React.FC<ComponentProps> = ({
       <StyledDetails>
         <Flex>
           <Text>APY</Text>
-          <Text>{tierId !== null ? `${APYs[tierId]}%` : 'select duration'}</Text>
+          <Text>{tierId !== null ? `${APYs[tierId]}%` : <i>select duration</i>}</Text>
         </Flex>
         <Flex>
           <Text>Max fine</Text>
           <Text>10%</Text>
         </Flex>
+        { toStakeTkn &&
+          <Flex>
+            <Text>To Stake</Text>
+            <Text>{new BigNumber(toStakeTkn).toFormat()} {pairSymbol}</Text>
+          </Flex>
+        }
         <Flex>
           <Text>Max profit (estimated)</Text>
-          <Text>-</Text>
+          <Text>{ tierId !== null ?
+            `≈ ${new BigNumber(estimatedProfit).toFormat()} ${pairSymbol}`
+            :
+            <i>select duration</i> }
+          </Text>
         </Flex>
+
         <hr style={{ width: '100%' }} />
         <Flex>
           <Text>You staked</Text>
@@ -126,7 +160,16 @@ const Component: React.FC<ComponentProps> = ({
         <ButtonSM>Deposit Max</ButtonSM>
       </Flex>
       <Flex style={{ flex: '0 100%', position: 'relative' }}>
-        <Input style={{ padding: '1.5rem' }} placeholder="0" type="number" min="0" />
+        <Input
+          pattern={`^[0-9]*[.,]?[0-9]{0,${18}}$`}
+          inputMode="decimal"
+          step="any"
+          min="0"
+          value={toStakeTkn}
+          onChange={handleChange}
+          style={{ padding: '1.5rem' }}
+          placeholder="0" type="number"
+        />
         <div style={{ position: 'absolute', top: '0.7rem', right: '1.5rem' }}>
           <Text color={theme.colors.textSubtle}>{pairSymbol}</Text>
         </div>

@@ -33,6 +33,7 @@ export interface Farm extends FarmConfig {
   isPromoted?: number
   userData?: {
     allowance: string
+    stakingTokenBalance?: BigNumber
     tokenBalance: string
     stakedBalance: string
     earnings: string
@@ -48,6 +49,7 @@ export interface Pool extends PoolConfig {
   stakingTokenPrice?: number
   earningTokenPrice?: number
   isAutoVault?: boolean
+  stakeTiers?: any
   userData?: {
     allowance: BigNumber
     stakingTokenBalance: BigNumber

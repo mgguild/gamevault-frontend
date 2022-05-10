@@ -54,6 +54,15 @@ import { Cards2, Card2Container, TokenLogo, Badge, LinearBG, PageContainer } fro
 import { RenderSocials } from '../../../components/Launchpad/Logo'
 import InputComponent from './InputComponent'
 
+BigNumber.config({
+  DECIMAL_PLACES: 4,
+  FORMAT: {
+    decimalSeparator: '.',
+    groupSeparator: ',',
+    groupSize: 3,
+  },
+})
+
 const FlexC = styled(Flex)`
   padding: 2.5rem;
   flex-flow column wrap;
@@ -514,6 +523,8 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
   const { pathname } = useLocation()
   const { pools: poolsWithoutAutoVault, userDataLoaded } = usePools(account)
 
+  useFetchPublicPoolsData()
+
   const currentPool = useMemo(() => {
     const getPool = poolsWithoutAutoVault.filter((pool) =>
       new BigNumber(pool.sousId).isEqualTo(new BigNumber(farmID)),
@@ -521,6 +532,9 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
 
     return getPool
   }, [poolsWithoutAutoVault, farmID])
+
+  const overallStaked = new BigNumber(getBalanceNumber(new BigNumber(currentPool.totalStaked), currentPool.stakingToken.decimals)).toFormat()
+  console.log(currentPool)
 
   const data = React.useMemo(
     () => [
@@ -592,7 +606,7 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
               {currentPool.stakingToken.symbol} - {currentPool.earningToken.symbol} Pool Based Farm
             </Heading>
             <Text>Deposit your {currentPool.stakingToken.symbol} Tokens to earn Extra Annual Percentage Rate</Text>
-            <Text color={theme.colors.MGG_accent2}>Current APR</Text>
+            <Text color={theme.colors.MGG_accent2}>Total MGG staked</Text>
             <Flex
               style={{
                 width: '100%',
@@ -601,7 +615,7 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
                 backgroundColor: theme.colors.MGG_container,
               }}
             >
-              <Heading style={{ fontSize: '1.875rem' }}>150%</Heading>
+              <Heading style={{ fontSize: '1.875rem' }}>{overallStaked}</Heading>
             </Flex>
 
             <Flex style={{ width: '100%', flexFlow: 'row wrap', gap: '1rem', justifyContent: 'space-evenly' }}>

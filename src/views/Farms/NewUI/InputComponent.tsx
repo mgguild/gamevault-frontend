@@ -1,9 +1,21 @@
-import React, { Dispatch, SetStateAction, useContext } from 'react'
+import React, { Dispatch, SetStateAction, useState, useContext, useMemo } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import { Grid } from '@mui/material'
 import { Flex, Text, Button, Input } from '@metagg/mgg-uikit'
 import { FarmWithStakedValue } from 'views/Gamefi/components/config'
+import BigNumber from 'bignumber.js'
+import { getBalanceNumber, toBigNumber } from 'utils/formatBalance'
 import { Pool } from 'state/types'
+import { EPOCH_PER_YEAR, EPOCH_PER_DAY } from 'config'
+
+BigNumber.config({
+  DECIMAL_PLACES: 4,
+  FORMAT: {
+    decimalSeparator: '.',
+    groupSeparator: ',',
+    groupSize: 3,
+  },
+})
 
 const ButtonSM = styled(Button)`
   padding: 0.5rem 1rem;
@@ -32,6 +44,10 @@ interface ComponentProps {
   currentPoolBased?: Pool
 }
 
+const intoDays = (seconds: string) => {
+  return new BigNumber(seconds).div(new BigNumber(EPOCH_PER_DAY)).toJSON()
+}
+
 const Component: React.FC<ComponentProps> = ({
   dayDuration,
   dayFunction,
@@ -41,15 +57,35 @@ const Component: React.FC<ComponentProps> = ({
 }) => {
   const theme = useContext(ThemeContext)
   const pairSymbol = stakingType === 'farm' ? currentFarm.lpSymbol : currentPoolBased.stakingToken.symbol
+
+  const currentStake = stakingType === 'farm' ? currentFarm : currentPoolBased
+  const userTotalStaked = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakedBalance), currentStake.stakingToken.decimals)) : new BigNumber(0)
+  const userStakingBal = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakingTokenBalance), currentStake.stakingToken.decimals)) : new BigNumber(0)
+  const [tierId, setTierId] = useState(null)
+  console.log('userTotalStaked: ', userTotalStaked)
+
+  console.log('tiers', currentStake.stakeTiers)
+  console.log('tiers1', intoDays(currentStake.stakeTiers.tier1.duration))
+
+  const tiersDuration = useMemo(() => Object.keys(currentStake.stakeTiers).map((tier) => {
+    return intoDays(currentStake.stakeTiers[tier].duration)
+  }), [currentStake])
+
+  const APYs = useMemo(() => Object.keys(currentStake.stakeTiers).map((tier) => {
+    return getBalanceNumber(new BigNumber(currentStake.stakeTiers[tier].apyPerSec).times(new BigNumber(EPOCH_PER_YEAR)), currentStake.stakingToken.decimals).toFixed(0)
+  }), [currentStake])
+
+  console.log('APYs: ', APYs)
+
   return (
     <>
       <Flex justifyContent="center" style={{ width: '100%' }}>
         <Grid container spacing={{ xs: 2, md: 1 }} justifyContent="center">
-          {['15', '90', '180', '365'].map((day) => (
+          {[0, 1, 2, 3].map((index) => (
             <>
               <Grid item xs={12} sm={3} md={3}>
-                <ButtonSM fullWidth onClick={() => dayFunction(day)}>
-                  {`${day} Days`}
+                <ButtonSM fullWidth onClick={() => {dayFunction(tiersDuration[index]); setTierId(index)}}>
+                  {`${tiersDuration[index]} Days`}
                 </ButtonSM>
               </Grid>
             </>
@@ -59,11 +95,11 @@ const Component: React.FC<ComponentProps> = ({
       <StyledDetails>
         <Flex>
           <Text>APY</Text>
-          <Text>2%</Text>
+          <Text>{tierId !== null ? `${APYs[tierId]}%` : 'select duration'}</Text>
         </Flex>
         <Flex>
           <Text>Max fine</Text>
-          <Text>60%</Text>
+          <Text>10%</Text>
         </Flex>
         <Flex>
           <Text>Max profit (estimated)</Text>
@@ -72,16 +108,16 @@ const Component: React.FC<ComponentProps> = ({
         <hr style={{ width: '100%' }} />
         <Flex>
           <Text>You staked</Text>
-          <Text>1000 {pairSymbol}</Text>
+          <Text>{userTotalStaked.toFormat()} {pairSymbol}</Text>
         </Flex>
         <Flex>
           <Text>Your balance</Text>
-          <Text>0 {pairSymbol}</Text>
+          <Text>{userStakingBal.toFormat()} {pairSymbol}</Text>
         </Flex>
-        <Flex>
+        {/* <Flex>
           <Text>Total staked</Text>
           <Text>10000.00 {pairSymbol}</Text>
-        </Flex>
+        </Flex> */}
       </StyledDetails>
       <Flex style={{ flex: '0 50%' }}>
         <Text>Amount</Text>

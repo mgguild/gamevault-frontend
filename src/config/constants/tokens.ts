@@ -1674,7 +1674,7 @@ const tokens = {
     address: {
       1: '0x9F7A0406Abe72354006Ac8949c156365A7455e3A',
       56: '0x6125adcab2f171bc70cfe2caecfec5509273a86a',
-      97: '0xb67F3922042B8c4546DFD9E55C1E55CaC7aE1F3f',
+      97: '0xb67f3922042b8c4546dfd9e55c1e55cac7ae1f3f',
     },
     decimals: 18,
     iconExtension: 'png',

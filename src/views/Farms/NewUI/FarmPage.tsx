@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Route, useLocation, useRouteMatch, RouteComponentProps } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
+import moment from 'moment'
 import { useWeb3React } from '@web3-react/core'
 import { Grid } from '@mui/material'
 import { RefreshCcw } from 'react-feather'
@@ -23,7 +24,7 @@ import { useFarmPrice } from 'hooks/price'
 import usePrevious from 'utils/refHelpers'
 import { Farm, Pool } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
-import { getBalanceNumber, getBalanceAmount } from 'utils/formatBalance'
+import { getBalanceNumber, getBalanceAmount, toBigNumber } from 'utils/formatBalance'
 import { getFarmApr, getFarmV2Apr } from 'utils/apr'
 import useTokenBalance from 'hooks/useTokenBalance'
 import { orderBy } from 'lodash'
@@ -467,7 +468,7 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
   }, [poolsWithoutAutoVault, farmID])
 
   const overallStaked = new BigNumber(getBalanceNumber(new BigNumber(currentPool.totalStaked), currentPool.stakingToken.decimals)).toFormat()
-  console.log(currentPool)
+  // console.log(currentPool)
 
   const data = React.useMemo(
     () => [
@@ -560,8 +561,8 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
               </Stats>
               <Stats>
                 <div>
-                  <Heading size="l">June 03, 2022</Heading>
-                  <Text fontSize="0.8rem">Last day to earn APR</Text>
+                   <Heading size="l">{dayDuration !== '' ? `${moment().add(toBigNumber(dayDuration), 'days').format('LL')}` : 'Select days'}</Heading>
+                  {dayDuration !== '' && <Text fontSize="0.8rem">Last day to earn APR</Text>}
                 </div>
               </Stats>
               {/* <Stats>

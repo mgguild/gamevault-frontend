@@ -107,6 +107,8 @@ const Gamefi: React.FC = () => {
   }, [poolsWithoutAutoVault])
 
   const [finishedPools, openPools] = useMemo(() => partition(pools, (pool) => pool.isFinished), [pools])
+  console.log('pools: ', openPools)
+  console.log('finishedPools: ', finishedPools)
   const stakedOnlyFinishedPools = useMemo(
     () =>
       finishedPools.filter((pool) => {

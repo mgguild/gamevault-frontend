@@ -7,12 +7,13 @@ import { PoolsState, Pool, CakeVault, VaultFees, VaultUser, AppThunk } from 'sta
 import { getPoolApr } from 'utils/apr'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { getAddress } from 'utils/addressHelpers'
-import { fetchPoolsBlockLimits, fetchPoolsStakingLimits, fetchPoolsTotalStaking } from './fetchPools'
+import { fetchPoolsBlockLimits, fetchPoolsStakingLimits, fetchPoolsTotalStaking, fetchPoolStakingTiers } from './fetchPools'
 import {
   fetchPoolsAllowance,
   fetchUserBalances,
   fetchUserStakeBalances,
   fetchUserPendingRewards,
+  fetchUserTotalStaked,
 } from './fetchPoolsUser'
 import { fetchPublicVaultData, fetchVaultFees } from './fetchVaultPublic'
 import fetchVaultUser from './fetchVaultUser'
@@ -45,6 +46,8 @@ const initialState: PoolsState = {
 
 // Thunks
 export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispatch, getState) => {
+
+  const stakesTiers = await fetchPoolStakingTiers()
   const blockLimits = await fetchPoolsBlockLimits()
   const totalStakings = await fetchPoolsTotalStaking()
 
@@ -53,8 +56,9 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispat
   const liveData = poolsConfig.map((pool) => {
     const blockLimit = blockLimits.find((entry) => entry.sousId === pool.sousId)
     const totalStaking = totalStakings.find((entry) => entry.sousId === pool.sousId)
+    const stakeTiers = stakesTiers.find((entry) => entry.sousId === pool.sousId)
     const isPoolEndBlockExceeded = currentBlock > 0 && blockLimit ? currentBlock > Number(blockLimit.endBlock) : false
-    const isPoolFinished = pool.isFinished || isPoolEndBlockExceeded
+    const isPoolFinished = false  // pool.isFinished || isPoolEndBlockExceeded - hard coded for testnet
 
     const stakingTokenAddress = pool.stakingToken.address ? getAddress(pool.stakingToken.address).toLowerCase() : null
     const stakingTokenPrice = stakingTokenAddress ? prices[stakingTokenAddress] : 0
@@ -70,9 +74,11 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispat
         )
       : 0
 
+    console.log('got pools data')
     return {
       ...blockLimit,
       ...totalStaking,
+      ...stakeTiers,
       stakingTokenPrice,
       earningTokenPrice,
       apr,
@@ -109,17 +115,18 @@ export const fetchPoolsUserDataAsync =
   async (dispatch) => {
     const allowances = await fetchPoolsAllowance(account)
     const stakingTokenBalances = await fetchUserBalances(account)
-    const stakedBalances = await fetchUserStakeBalances(account)
-    const pendingRewards = await fetchUserPendingRewards(account)
+    // const stakedBalances = await fetchUserStakeBalances(account)
+    // const pendingRewards = await fetchUserPendingRewards(account)
+    const totalStakes = await fetchUserTotalStaked(account)
 
     const userData = poolsConfig.map((pool) => ({
       sousId: pool.sousId,
       allowance: allowances[pool.sousId],
       stakingTokenBalance: stakingTokenBalances[pool.sousId],
-      stakedBalance: stakedBalances[pool.sousId],
-      pendingReward: pendingRewards[pool.sousId],
+      stakedBalance: totalStakes[pool.sousId],
+      // pendingReward: pendingRewards[pool.sousId],
     }))
-
+    console.log('userData: ', userData)
     dispatch(setPoolsUserData(userData))
   }
 

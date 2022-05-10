@@ -92,3 +92,21 @@ export const fetchUserPendingRewards = async (account) => {
 
   return { ...pendingRewards, 0: new BigNumber(pendingReward).toJSON() }
 }
+
+export const fetchUserTotalStaked = async (account) => {
+  const calls = nonMasterPools.map((p) => ({
+    address: getAddress(p.contractAddress),
+    name: 'stakedOf',
+    params: [account],
+  }))
+
+  const callTotalStakes = await multicall(sousChefABI, calls)
+
+  return nonMasterPools.reduce(
+    (acc, pool, index) => ({
+      ...acc,
+      [pool.sousId]: new BigNumber(callTotalStakes[index][0]._hex).toJSON() }),
+    {},
+  )
+
+}

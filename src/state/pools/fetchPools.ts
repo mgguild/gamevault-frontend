@@ -23,12 +23,13 @@ export const fetchPoolsBlockLimits = async () => {
     }
   })
 
-  const starts = await multicall(sousChefABI, callsStartBlock)
-  const ends = await multicall(sousChefABI, callsEndBlock)
+  // commented out for testnet
+  // const starts = await multicall(sousChefABI, callsStartBlock)
+  // const ends = await multicall(sousChefABI, callsEndBlock)
 
   return poolsWithEnd.map((cakePoolConfig, index) => {
-    const startBlock = starts[index]
-    const endBlock = ends[index]
+    const startBlock = '0x011025c8' // hard coded for testnet
+    const endBlock = '0x011025c8' // hard coded for testnet
     return {
       sousId: cakePoolConfig.sousId,
       startBlock: new BigNumber(startBlock).toJSON(),
@@ -57,13 +58,14 @@ export const fetchPoolsTotalStaking = async () => {
     }
   })
 
-  const nonBnbPoolsTotalStaked = await multicall(sousChefV2, callsNonBnbPools)
-  const bnbPoolsTotalStaked = await multicall(wbnbABI, callsBnbPools)
+  // commented out for testnet
+  // const nonBnbPoolsTotalStaked = await multicall(sousChefV2, callsNonBnbPools)
+  const bnbPoolsTotalStaked = [] // hard coded for testnet
 
   return [
     ...nonBnbPools.map((p, index) => ({
       sousId: p.sousId,
-      totalStaked: new BigNumber(nonBnbPoolsTotalStaked[index]).toJSON(),
+      totalStaked: new BigNumber('0x032fbf4ce723462e3274b7').toJSON(),
     })),
     ...bnbPool.map((p, index) => ({
       sousId: p.sousId,
@@ -100,4 +102,59 @@ export const fetchPoolsStakingLimits = async (
       [validPools[index].sousId]: stakingLimit,
     }
   }, {})
+}
+
+export const fetchPoolStakingTiers = async () => {
+  console.log('FETCH TIER 1');
+  const poolsWithEnd = poolsConfig.filter((p) => p.sousId !== 0)
+
+  const getTier1 = poolsWithEnd.map((poolConfig) => {
+    return {
+      address: getAddress(poolConfig.contractAddress),
+      name: 'tierInfo',
+      params: [1],
+    }
+  })
+
+  const getTier2 = poolsWithEnd.map((poolConfig) => {
+    return {
+      address: getAddress(poolConfig.contractAddress),
+      name: 'tierInfo',
+      params: [2],
+    }
+  })
+
+  const getTier3 = poolsWithEnd.map((poolConfig) => {
+    return {
+      address: getAddress(poolConfig.contractAddress),
+      name: 'tierInfo',
+      params: [3],
+    }
+  })
+
+  const getTier4 = poolsWithEnd.map((poolConfig) => {
+    return {
+      address: getAddress(poolConfig.contractAddress),
+      name: 'tierInfo',
+      params: [4],
+    }
+  })
+
+
+  const tier1 = await multicall(sousChefABI, getTier1)
+  const tier2 = await multicall(sousChefABI, getTier2)
+  const tier3 = await multicall(sousChefABI, getTier3)
+  const tier4 = await multicall(sousChefABI, getTier4)
+
+  return poolsWithEnd.map((cakePoolConfig, index) => {
+    return {
+      sousId: cakePoolConfig.sousId,
+      stakeTiers:{
+        tier1: {duration: new BigNumber(tier1[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},
+        tier2: {duration: new BigNumber(tier2[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},
+        tier3: {duration: new BigNumber(tier3[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},
+        tier4: {duration: new BigNumber(tier4[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},
+      }
+    }
+  })
 }

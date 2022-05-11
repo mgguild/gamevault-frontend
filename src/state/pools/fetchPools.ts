@@ -158,3 +158,24 @@ export const fetchPoolStakingTiers = async () => {
     }
   })
 }
+
+export const fetchPoolMaxFine = async () => {
+  const poolsWithEnd = poolsConfig.filter((p) => p.sousId !== 0)
+
+  const getMaxFine = poolsWithEnd.map((poolConfig) => {
+    return {
+      address: getAddress(poolConfig.contractAddress),
+      name: 'maxFine',
+      params: [],
+    }
+  })
+
+  const maxFines = await multicall(sousChefABI, getMaxFine)
+
+  return poolsWithEnd.map((cakePoolConfig, index) => {
+    return{
+      sousId: cakePoolConfig.sousId,
+      maxFine: new BigNumber(maxFines[index]).toJSON()
+    }
+  })
+}

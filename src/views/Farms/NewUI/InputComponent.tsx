@@ -106,7 +106,7 @@ const Component: React.FC<ComponentProps> = ({
         <Grid container spacing={{ xs: 2, md: 1 }} justifyContent="center">
           {[0, 1, 2, 3].map((index) => (
             <>
-              <Grid item xs={12} sm={3} md={3}>
+              <Grid key={index} item xs={12} sm={3} md={3}>
                 <ButtonSM fullWidth onClick={() => handleTierChange(index)}>
                   {`${tiersDuration[index]} Days`}
                 </ButtonSM>
@@ -122,7 +122,7 @@ const Component: React.FC<ComponentProps> = ({
         </Flex>
         <Flex>
           <Text>Max fine</Text>
-          <Text>10%</Text>
+          <Text>{currentStake.maxFine}%</Text>
         </Flex>
         { toStakeTkn &&
           <Flex>

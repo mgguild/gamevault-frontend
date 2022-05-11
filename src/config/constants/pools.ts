@@ -6,7 +6,7 @@ const pools: PoolConfig[] = [
   {
     isMain: true,
     sousId: 10,
-    name: 'Test contract srkb token',
+    name: 'Test stake MGG1',
     stakingToken: tokens.mgg,
     earningToken: tokens.mgg,
     contractAddress: {
@@ -23,7 +23,7 @@ const pools: PoolConfig[] = [
   {
     isMain: true,
     sousId: 11,
-    name: 'Test stake MGG',
+    name: 'Test stake MGG2',
     stakingToken: tokens.mgg,
     earningToken: tokens.mgg,
     contractAddress: {

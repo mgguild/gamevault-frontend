@@ -6,5 +6,6 @@ export interface FarmWithStakedValue extends Farm {
   apr?: number
   liquidity?: BigNumber
   stakeTiers?: any
+  maxFine?: string
   stakingToken?: Token
 }

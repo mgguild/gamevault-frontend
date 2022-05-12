@@ -2,6 +2,12 @@ import tokens from './tokens'
 import { PoolConfig, PoolCategory } from './types'
 import farmsUIProps from './farmsUIProps'
 
+const testConfigProps = {
+  startBlock: '0x011025c8',
+  endBlock: '0x011025c8',
+  nonBnbPoolsTotalStaked: '0x032fbf4ce723462e3274b7',
+}
+
 const pools: PoolConfig[] = [
   {
     isMain: true,
@@ -19,6 +25,7 @@ const pools: PoolConfig[] = [
     sortOrder: 998,
     isFinished: false,
     UIProps: farmsUIProps.mgg3,
+    testHardcodeProps: testConfigProps,
   },
   {
     isMain: true,
@@ -36,6 +43,7 @@ const pools: PoolConfig[] = [
     sortOrder: 997,
     isFinished: false,
     UIProps: farmsUIProps.mgg2,
+    testHardcodeProps: testConfigProps,
   },
   // {
   //   isMain: true,

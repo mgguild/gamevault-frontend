@@ -109,6 +109,7 @@ export interface PoolConfig {
   isDepositDisabled?: boolean
   isWithdrawDisabled?: boolean
   UIProps?: UIProps
+  testHardcodeProps?: any // for testing purposes
 }
 
 export type Images = {

@@ -63,7 +63,7 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispat
   const liveData = poolsConfig.map((pool) => {
     const blockLimit = blockLimits.find((entry) => entry.sousId === pool.sousId)
     const totalStaking = totalStakings.find((entry) => entry.sousId === pool.sousId)
-    const stakeTiers = stakesTiers.find((entry) => entry.sousId === pool.sousId)
+    const tiers = stakesTiers.find((entry) => entry.sousId === pool.sousId)
     const maxFine = maxFines.find((entry) => entry.sousId === pool.sousId)
     const isPoolEndBlockExceeded = currentBlock > 0 && blockLimit ? currentBlock > Number(blockLimit.endBlock) : false
     const isPoolFinished = false  // pool.isFinished || isPoolEndBlockExceeded - hard coded for testnet
@@ -86,7 +86,7 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispat
     return {
       ...blockLimit,
       ...totalStaking,
-      ...stakeTiers,
+      ...tiers,
       ...maxFine,
       stakingTokenPrice,
       earningTokenPrice,

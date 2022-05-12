@@ -28,8 +28,10 @@ export const fetchPoolsBlockLimits = async () => {
   // const ends = await multicall(sousChefABI, callsEndBlock)
 
   return poolsWithEnd.map((cakePoolConfig, index) => {
-    const startBlock = '0x011025c8' // hard coded for testnet
-    const endBlock = '0x011025c8' // hard coded for testnet
+    // testnet hardcoded here
+    const startBlock = cakePoolConfig.testHardcodeProps.startBlock
+    const endBlock = cakePoolConfig.testHardcodeProps.endBlock
+
     return {
       sousId: cakePoolConfig.sousId,
       startBlock: new BigNumber(startBlock).toJSON(),
@@ -45,7 +47,7 @@ export const fetchPoolsTotalStaking = async () => {
   const callsNonBnbPools = nonBnbPools.map((poolConfig) => {
     return {
       address: getAddress(poolConfig.contractAddress),
-      name: 'totalDeposit',
+      name: 'totalStaked', // totalDeposit
       params: [],
     }
   })
@@ -58,14 +60,13 @@ export const fetchPoolsTotalStaking = async () => {
     }
   })
 
-  // commented out for testnet
-  // const nonBnbPoolsTotalStaked = await multicall(sousChefV2, callsNonBnbPools)
-  const bnbPoolsTotalStaked = [] // hard coded for testnet
+  const nonBnbPoolsTotalStaked = await multicall(sousChefV2, callsNonBnbPools)
+  const bnbPoolsTotalStaked = await multicall(wbnbABI, callsBnbPools)
 
   return [
     ...nonBnbPools.map((p, index) => ({
       sousId: p.sousId,
-      totalStaked: new BigNumber('0x032fbf4ce723462e3274b7').toJSON(),
+      totalStaked: new BigNumber(nonBnbPoolsTotalStaked[index]).toJSON(),
     })),
     ...bnbPool.map((p, index) => ({
       sousId: p.sousId,
@@ -149,7 +150,7 @@ export const fetchPoolStakingTiers = async () => {
   return poolsWithEnd.map((cakePoolConfig, index) => {
     return {
       sousId: cakePoolConfig.sousId,
-      stakeTiers:{
+      tiers:{
         tier1: {duration: new BigNumber(tier1[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},
         tier2: {duration: new BigNumber(tier2[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},
         tier3: {duration: new BigNumber(tier3[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},

@@ -595,6 +595,7 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
                   dayFunction={setDayDuration}
                   stakingType="pool"
                   currentPoolBased={currentPool}
+                  account={account}
                 />
               )}
               <Flex style={{ flex: '0 100%' }} />

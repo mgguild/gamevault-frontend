@@ -6,7 +6,10 @@ import { FarmWithStakedValue } from 'views/Gamefi/components/config'
 import BigNumber from 'bignumber.js'
 import { getBalanceNumber, toBigNumber } from 'utils/formatBalance'
 import { Pool } from 'state/types'
+import { BIG_ZERO } from 'utils/bigNumber'
 import { EPOCH_PER_YEAR, EPOCH_PER_DAY } from 'config'
+import UnlockButton from 'components/UnlockButton'
+import StakeActions from './Actions/StakeActions'
 
 BigNumber.config({
   DECIMAL_PLACES: 4,
@@ -42,6 +45,7 @@ interface ComponentProps {
   currentFarm?: FarmWithStakedValue
   stakingType: string
   currentPoolBased?: Pool
+  account?: any
 }
 
 const intoDays = (seconds: string) => {
@@ -54,25 +58,29 @@ const Component: React.FC<ComponentProps> = ({
   currentFarm,
   currentPoolBased,
   stakingType,
+  account,
 }) => {
+  console.log('account: ', account)
   const theme = useContext(ThemeContext)
   const pairSymbol = stakingType === 'farm' ? currentFarm.lpSymbol : currentPoolBased.stakingToken.symbol
 
   const currentStake = stakingType === 'farm' ? currentFarm : currentPoolBased
-  const userTotalStaked = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakedBalance), currentStake.stakingToken.decimals)) : new BigNumber(0)
-  const userStakingBal = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakingTokenBalance), currentStake.stakingToken.decimals)) : new BigNumber(0)
+
+  const isLoading = !currentStake.userData
+  const userTotalStaked = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakedBalance), currentStake.stakingToken.decimals)) : BIG_ZERO
+  const userStakingBal = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakingTokenBalance), currentStake.stakingToken.decimals)) : BIG_ZERO
   const [tierId, setTierId] = useState(null)
 
   const [toStakeTkn, setTknStake] = useState('')
   const [percentage, setPercentage] = useState('0.0')
   const [estimatedProfit, setEstimatedProfit] = useState('-')
 
-  const tiersDuration = useMemo(() => Object.keys(currentStake.stakeTiers).map((tier) => {
-    return intoDays(currentStake.stakeTiers[tier].duration)
+  const tiersDuration = useMemo(() => Object.keys(currentStake.tiers).map((tier) => {
+    return intoDays(currentStake.tiers[tier].duration)
   }), [currentStake])
 
-  const APYs = useMemo(() => Object.keys(currentStake.stakeTiers).map((tier) => {
-    return getBalanceNumber(new BigNumber(currentStake.stakeTiers[tier].apyPerSec).times(new BigNumber(EPOCH_PER_YEAR)), currentStake.stakingToken.decimals).toFixed(0)
+  const APYs = useMemo(() => Object.keys(currentStake.tiers).map((tier) => {
+    return getBalanceNumber(new BigNumber(currentStake.tiers[tier].apyPerSec).times(new BigNumber(EPOCH_PER_YEAR)), currentStake.stakingToken.decimals).toFixed(0)
   }), [currentStake])
 
   const handleChange = useCallback(
@@ -175,7 +183,11 @@ const Component: React.FC<ComponentProps> = ({
         </div>
       </Flex>
       <Flex style={{ flex: '0 100%', justifyContent: 'center' }}>
-        <Button fullWidth>Stake</Button>
+        {account?
+          <Button fullWidth disabled>Stake</Button>
+          :
+          <UnlockButton />
+        }
       </Flex>
     </>
   )

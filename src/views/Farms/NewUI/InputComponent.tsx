@@ -1,15 +1,17 @@
-import React, { Dispatch, SetStateAction, useState, useContext, useMemo, useCallback } from 'react'
+import React, { Dispatch, SetStateAction, useState, useContext, useMemo, useCallback, useEffect } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import { Grid } from '@mui/material'
-import { Flex, Text, Button, Input } from '@metagg/mgg-uikit'
+import { Flex, Text, Button, Input, useModal } from '@metagg/mgg-uikit'
 import { FarmWithStakedValue } from 'views/Gamefi/components/config'
 import BigNumber from 'bignumber.js'
 import { getBalanceNumber, toBigNumber } from 'utils/formatBalance'
 import { Pool } from 'state/types'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { EPOCH_PER_YEAR, EPOCH_PER_DAY } from 'config'
+import { useSousApprove, useSousApproveWithAmount } from 'hooks/useApprove'
+import useToast from 'hooks/useToast'
 import UnlockButton from 'components/UnlockButton'
-import StakeActions from './Actions/StakeActions'
+import StakeModal from './Modals/StakeModal'
 
 BigNumber.config({
   DECIMAL_PLACES: 4,
@@ -42,6 +44,7 @@ const StyledDetails = styled(Flex)`
 interface ComponentProps {
   dayDuration: string
   dayFunction: Dispatch<SetStateAction<string>>
+  APYFunction: Dispatch<SetStateAction<string>>
   currentFarm?: FarmWithStakedValue
   stakingType: string
   currentPoolBased?: Pool
@@ -55,23 +58,31 @@ const intoDays = (seconds: string) => {
 const Component: React.FC<ComponentProps> = ({
   dayDuration,
   dayFunction,
+  APYFunction,
   currentFarm,
   currentPoolBased,
   stakingType,
   account,
 }) => {
-  console.log('account: ', account)
   const theme = useContext(ThemeContext)
+  const { toastSuccess, toastError, toastWarning } = useToast()
   const pairSymbol = stakingType === 'farm' ? currentFarm.lpSymbol : currentPoolBased.stakingToken.symbol
-
   const currentStake = stakingType === 'farm' ? currentFarm : currentPoolBased
 
-  const isLoading = !currentStake.userData
-  const userTotalStaked = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakedBalance), currentStake.stakingToken.decimals)) : BIG_ZERO
-  const userStakingBal = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakingTokenBalance), currentStake.stakingToken.decimals)) : BIG_ZERO
-  const [tierId, setTierId] = useState(null)
+  // const userTotalStaked = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakedBalance), currentStake.stakingToken.decimals)) : BIG_ZERO
+  // const userStakingBal  = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakingTokenBalance), currentStake.stakingToken.decimals)) : BIG_ZERO
+  // const userAllowance   = currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.allowance), currentStake.stakingToken.decimals)) : BIG_ZERO
 
-  const [toStakeTkn, setTknStake] = useState('')
+  const {userTotalStaked, userStakingBal, userAllowance} = useMemo(() => {
+    return {
+      userTotalStaked: currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakedBalance), currentStake.stakingToken.decimals)) : BIG_ZERO,
+      userStakingBal: currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.stakingTokenBalance), currentStake.stakingToken.decimals)) : BIG_ZERO,
+      userAllowance: currentStake.userData ? new BigNumber(getBalanceNumber(new BigNumber(currentStake.userData.allowance), currentStake.stakingToken.decimals)) : BIG_ZERO,
+    }
+  }, [currentStake])
+
+  const [tierId, setTierId] = useState(null)
+  const [stakeAmount, setTknStake] = useState('')
   const [percentage, setPercentage] = useState('0.0')
   const [estimatedProfit, setEstimatedProfit] = useState('-')
 
@@ -96,17 +107,43 @@ const Component: React.FC<ComponentProps> = ({
 
   const handleTierChange = useCallback((index: number) => {
     dayFunction(tiersDuration[index]);
+    APYFunction(APYs[index])
     setTierId(index)
     setPercentage(new BigNumber(APYs[index]).div(new BigNumber(100)).toString())
   },
   [ // dependencies
     dayFunction,
+    APYFunction,
     tiersDuration,
     setPercentage,
     setTierId,
     APYs
   ])
 
+  const [onPresentStakeAction] = useModal(
+    <StakeModal
+      stakingType={stakingType}
+      currentStake={currentStake}
+      pairSymbol={pairSymbol}
+      duration={tiersDuration[tierId]}
+      APY={APYs[tierId]}
+      maxFine={currentStake.maxFine}
+      stakeAmount={stakeAmount}
+      estimatedProfit={estimatedProfit}
+      userTotalStaked={userTotalStaked}
+      userStakingBal={userStakingBal}
+      userAllowance={userAllowance}
+    />
+  )
+
+  const handleStakeClick = useCallback(() => {
+    if(!userStakingBal.lte(new BigNumber(stakeAmount))){
+      onPresentStakeAction()
+    }else{
+      toastWarning('Insufficient balance!', 'Staking amount is greater then your current balance')
+    }
+  },
+  [onPresentStakeAction, toastWarning, stakeAmount, userStakingBal])
 
   return (
     <>
@@ -124,32 +161,10 @@ const Component: React.FC<ComponentProps> = ({
         </Grid>
       </Flex>
       <StyledDetails>
-        <Flex>
-          <Text>APY</Text>
-          <Text>{tierId !== null ? `${APYs[tierId]}%` : <i>select duration</i>}</Text>
-        </Flex>
-        <Flex>
-          <Text>Max fine</Text>
-          <Text>{currentStake.maxFine}%</Text>
-        </Flex>
-        { toStakeTkn &&
-          <Flex>
-            <Text>To Stake</Text>
-            <Text>{new BigNumber(toStakeTkn).toFormat()} {pairSymbol}</Text>
-          </Flex>
-        }
-        <Flex>
-          <Text>Max profit (estimated)</Text>
-          <Text>{ tierId !== null ?
-            `≈ ${new BigNumber(estimatedProfit).toFormat()} ${pairSymbol}`
-            :
-            <i>select duration</i> }
-          </Text>
-        </Flex>
 
         <hr style={{ width: '100%' }} />
         <Flex>
-          <Text>You staked</Text>
+          <Text>Your total stakes</Text>
           <Text>{userTotalStaked.toFormat()} {pairSymbol}</Text>
         </Flex>
         <Flex>
@@ -173,7 +188,7 @@ const Component: React.FC<ComponentProps> = ({
           inputMode="decimal"
           step="any"
           min="0"
-          value={toStakeTkn}
+          value={stakeAmount}
           onChange={handleChange}
           style={{ padding: '1.5rem' }}
           placeholder="0" type="number"
@@ -184,7 +199,7 @@ const Component: React.FC<ComponentProps> = ({
       </Flex>
       <Flex style={{ flex: '0 100%', justifyContent: 'center' }}>
         {account?
-          <Button fullWidth disabled>Stake</Button>
+          <Button fullWidth onClick={handleStakeClick}>Stake</Button>
           :
           <UnlockButton />
         }

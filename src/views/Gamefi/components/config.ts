@@ -6,9 +6,11 @@ export interface FarmWithStakedValue extends Farm {
   apr?: number
   liquidity?: BigNumber
   //
+  sousId?: number
   tiers?: any
   maxFine?: string
   stakingToken?: Token
+  earningToken?: Token
   stakingTokenPrice?: number
   stakingLimit?: BigNumber
   isFinished?: boolean

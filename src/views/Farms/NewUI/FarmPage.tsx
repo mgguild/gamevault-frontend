@@ -194,6 +194,7 @@ const RenderTable = ({ columns, data }) => {
 
 const RenderFarm: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tblColumns }) => {
   const [dayDuration, setDayDuration] = useState<string>('')
+  const [APY, setAPY] = useState<string>('')
   const theme = useContext(ThemeContext)
   const { path } = useRouteMatch()
   const { account, chainId } = useWeb3React()
@@ -324,6 +325,7 @@ const RenderFarm: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
                 <InputComponent
                   dayDuration={dayDuration}
                   dayFunction={setDayDuration}
+                  APYFunction={setAPY}
                   stakingType="farm"
                   currentFarm={currentFarm}
                 />
@@ -451,6 +453,7 @@ const RenderFarm: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
 
 const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tblColumns }) => {
   const [dayDuration, setDayDuration] = useState<string>('')
+  const [APY, setAPY] = useState<string>('')
   const theme = useContext(ThemeContext)
   const { path } = useRouteMatch()
   const { account, chainId } = useWeb3React()
@@ -561,16 +564,16 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
               </Stats>
               <Stats>
                 <div>
-                   <Heading size="l">{dayDuration !== '' ? `${moment().add(toBigNumber(dayDuration), 'days').format('LL')}` : 'Select days'}</Heading>
+                  <Heading size="l">{dayDuration !== '' ? `${moment().add(toBigNumber(dayDuration), 'days').format('LL')}` : 'Select days'}</Heading>
                   {dayDuration !== '' && <Text fontSize="0.8rem">Last day to earn APR</Text>}
                 </div>
               </Stats>
-              {/* <Stats>
+              <Stats>
                 <div>
-                  <Heading size="l">14 days</Heading>
-                  <Text fontSize="0.8rem">Minimum Staking Time</Text>
+                  <Heading size="l">{dayDuration !== '' ? `${APY}%` : 'Select days'}</Heading>
+                  {APY !== '' && <Text fontSize="0.8rem">Annual Percentage Rate</Text>}
                 </div>
-              </Stats> */}
+              </Stats>
             </Flex>
 
             <Text fontSize="0.8rem" color={theme.colors.textSubtle}>
@@ -593,6 +596,7 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
                 <InputComponent
                   dayDuration={dayDuration}
                   dayFunction={setDayDuration}
+                  APYFunction={setAPY}
                   stakingType="pool"
                   currentPoolBased={currentPool}
                   account={account}

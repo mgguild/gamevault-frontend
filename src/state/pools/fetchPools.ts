@@ -3,6 +3,7 @@ import poolsConfig from 'config/constants/pools'
 import sousChefABI from 'config/abi/sousChef.json'
 import wbnbABI from 'config/abi/weth.json'
 import sousChefV2 from 'config/abi/sousChefV2.json'
+import lpGamefiABI from 'config/abi/lpGameFi.json'
 import multicall from 'utils/multicall'
 import { getAddress, getWbnbAddress } from 'utils/addressHelpers'
 import { BIG_ZERO } from 'utils/bigNumber'
@@ -105,78 +106,3 @@ export const fetchPoolsStakingLimits = async (
   }, {})
 }
 
-export const fetchPoolStakingTiers = async () => {
-  console.log('FETCH TIER 1');
-  const poolsWithEnd = poolsConfig.filter((p) => p.sousId !== 0)
-
-  const getTier1 = poolsWithEnd.map((poolConfig) => {
-    return {
-      address: getAddress(poolConfig.contractAddress),
-      name: 'tierInfo',
-      params: [1],
-    }
-  })
-
-  const getTier2 = poolsWithEnd.map((poolConfig) => {
-    return {
-      address: getAddress(poolConfig.contractAddress),
-      name: 'tierInfo',
-      params: [2],
-    }
-  })
-
-  const getTier3 = poolsWithEnd.map((poolConfig) => {
-    return {
-      address: getAddress(poolConfig.contractAddress),
-      name: 'tierInfo',
-      params: [3],
-    }
-  })
-
-  const getTier4 = poolsWithEnd.map((poolConfig) => {
-    return {
-      address: getAddress(poolConfig.contractAddress),
-      name: 'tierInfo',
-      params: [4],
-    }
-  })
-
-
-  const tier1 = await multicall(sousChefABI, getTier1)
-  const tier2 = await multicall(sousChefABI, getTier2)
-  const tier3 = await multicall(sousChefABI, getTier3)
-  const tier4 = await multicall(sousChefABI, getTier4)
-
-  return poolsWithEnd.map((cakePoolConfig, index) => {
-    return {
-      sousId: cakePoolConfig.sousId,
-      tiers:{
-        tier1: {duration: new BigNumber(tier1[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},
-        tier2: {duration: new BigNumber(tier2[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},
-        tier3: {duration: new BigNumber(tier3[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},
-        tier4: {duration: new BigNumber(tier4[index][0]._hex).toJSON(), apyPerSec: new BigNumber(tier1[index][1]._hex).toJSON()},
-      }
-    }
-  })
-}
-
-export const fetchPoolMaxFine = async () => {
-  const poolsWithEnd = poolsConfig.filter((p) => p.sousId !== 0)
-
-  const getMaxFine = poolsWithEnd.map((poolConfig) => {
-    return {
-      address: getAddress(poolConfig.contractAddress),
-      name: 'maxFine',
-      params: [],
-    }
-  })
-
-  const maxFines = await multicall(sousChefABI, getMaxFine)
-
-  return poolsWithEnd.map((cakePoolConfig, index) => {
-    return{
-      sousId: cakePoolConfig.sousId,
-      maxFine: new BigNumber(maxFines[index]).toJSON()
-    }
-  })
-}

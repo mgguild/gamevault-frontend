@@ -1,5 +1,6 @@
 import poolsConfig from 'config/constants/pools'
 import sousChefABI from 'config/abi/sousChef.json'
+import lpGamefi from 'config/abi/lpGameFi.json'
 import erc20ABI from 'config/abi/erc20.json'
 import multicall from 'utils/multicall'
 import { getMasterchefContract } from 'utils/contractHelpers'
@@ -100,7 +101,7 @@ export const fetchUserTotalStaked = async (account) => {
     params: [account],
   }))
 
-  const callTotalStakes = await multicall(sousChefABI, calls)
+  const callTotalStakes = await multicall(lpGamefi, calls)
 
   return nonMasterPools.reduce(
     (acc, pool, index) => ({

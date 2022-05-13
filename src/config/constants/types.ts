@@ -109,7 +109,14 @@ export interface PoolConfig {
   isDepositDisabled?: boolean
   isWithdrawDisabled?: boolean
   UIProps?: UIProps
+  tiers?: Tiers[]
+  maxFine?: number
   testHardcodeProps?: any // for testing purposes
+}
+
+export interface Tiers {
+  duration: number
+  APR: number
 }
 
 export type Images = {

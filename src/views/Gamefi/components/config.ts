@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { Token } from 'config/constants/types'
+import { Token, Address, Tiers } from 'config/constants/types'
 import { Farm } from 'state/types'
 
 export interface FarmWithStakedValue extends Farm {
@@ -7,11 +7,12 @@ export interface FarmWithStakedValue extends Farm {
   liquidity?: BigNumber
   //
   sousId?: number
-  tiers?: any
-  maxFine?: string
+  tiers?: Tiers[]
+  maxFine?: number
   stakingToken?: Token
   earningToken?: Token
   stakingTokenPrice?: number
   stakingLimit?: BigNumber
   isFinished?: boolean
+  contractAddress?: Address
 }

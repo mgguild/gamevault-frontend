@@ -1,5 +1,5 @@
 import tokens from './tokens'
-import { PoolConfig, PoolCategory } from './types'
+import { PoolConfig, PoolCategory, Tiers } from './types'
 import farmsUIProps from './farmsUIProps'
 
 const testConfigProps = {
@@ -7,6 +7,25 @@ const testConfigProps = {
   endBlock: '0x011025c8',
   nonBnbPoolsTotalStaked: '0x032fbf4ce723462e3274b7',
 }
+
+const tiers: Tiers[]  = [
+  {
+    duration: 30,
+    APR: 7
+  },
+  {
+    duration: 90,
+    APR: 12
+  },
+  {
+    duration: 180,
+    APR: 16
+  },
+  {
+    duration: 365,
+    APR: 25
+  }
+]
 
 const pools: PoolConfig[] = [
   {
@@ -25,6 +44,8 @@ const pools: PoolConfig[] = [
     sortOrder: 998,
     isFinished: false,
     UIProps: farmsUIProps.mgg3,
+    tiers,
+    maxFine: 10,
     testHardcodeProps: testConfigProps,
   },
   {
@@ -43,6 +64,8 @@ const pools: PoolConfig[] = [
     sortOrder: 997,
     isFinished: false,
     UIProps: farmsUIProps.mgg2,
+    tiers,
+    maxFine: 10,
     testHardcodeProps: testConfigProps,
   },
   // {

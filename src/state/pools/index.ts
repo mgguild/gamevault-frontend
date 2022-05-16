@@ -11,8 +11,6 @@ import {
   fetchPoolsBlockLimits,
   fetchPoolsStakingLimits,
   fetchPoolsTotalStaking,
-  fetchPoolStakingTiers,
-  fetchPoolMaxFine,
 } from './fetchPools'
 import {
   fetchPoolsAllowance,
@@ -53,18 +51,14 @@ const initialState: PoolsState = {
 // Thunks
 export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispatch, getState) => {
 
-  const stakesTiers = await fetchPoolStakingTiers()
   const blockLimits = await fetchPoolsBlockLimits()
   const totalStakings = await fetchPoolsTotalStaking()
-  const maxFines = await fetchPoolMaxFine()
 
   const prices = getTokenPricesFromFarm(getState().farms.data)
 
   const liveData = poolsConfig.map((pool) => {
     const blockLimit = blockLimits.find((entry) => entry.sousId === pool.sousId)
     const totalStaking = totalStakings.find((entry) => entry.sousId === pool.sousId)
-    const tiers = stakesTiers.find((entry) => entry.sousId === pool.sousId)
-    const maxFine = maxFines.find((entry) => entry.sousId === pool.sousId)
     const isPoolEndBlockExceeded = currentBlock > 0 && blockLimit ? currentBlock > Number(blockLimit.endBlock) : false
     const isPoolFinished = false  // pool.isFinished || isPoolEndBlockExceeded - hard coded for testnet
 
@@ -86,8 +80,6 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispat
     return {
       ...blockLimit,
       ...totalStaking,
-      ...tiers,
-      ...maxFine,
       stakingTokenPrice,
       earningTokenPrice,
       apr,
@@ -135,7 +127,6 @@ export const fetchPoolsUserDataAsync =
       stakedBalance: totalStakes[pool.sousId],
       // pendingReward: pendingRewards[pool.sousId],
     }))
-    console.log('userData: ', userData)
     dispatch(setPoolsUserData(userData))
   }
 

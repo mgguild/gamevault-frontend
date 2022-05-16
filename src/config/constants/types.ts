@@ -115,6 +115,7 @@ export interface PoolConfig {
 }
 
 export interface Tiers {
+  id: string
   duration: number
   APR: number
 }

@@ -10,18 +10,22 @@ const testConfigProps = {
 
 const tiers: Tiers[]  = [
   {
+    id: '1',
     duration: 30,
     APR: 7
   },
   {
+    id: '2',
     duration: 90,
     APR: 12
   },
   {
+    id: '3',
     duration: 180,
     APR: 16
   },
   {
+    id: '4',
     duration: 365,
     APR: 25
   }

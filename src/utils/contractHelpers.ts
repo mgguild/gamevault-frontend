@@ -6,6 +6,7 @@ import { PoolCategory } from 'config/constants/types'
 import inoAbi from 'config/abi/ino.json'
 import igoAbi from 'config/abi/ido.json'
 import vesting from 'config/abi/vesting.json'
+import gamefiVaultsABI from 'config/abi/gamefiVaults.json'
 
 // Addresses
 import {
@@ -99,6 +100,9 @@ export const getIgoContract = (address: string, web3?: Web3) => {
 }
 export const getVestingContract = (address: string, web3?: Web3) => {
   return getContract(vesting, address, web3)
+}
+export const getGamefiContract = (address: string, web3?: Web3) => {
+  return getContract(gamefiVaultsABI, address, web3)
 }
 export const getIfoV2Contract = (address: string, web3?: Web3) => {
   return getContract(ifoV2Abi, address, web3)

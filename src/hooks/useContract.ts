@@ -27,6 +27,7 @@ import {
   getInoContract,
   getIgoContract,
   getVestingContract,
+  getGamefiContract,
 } from 'utils/contractHelpers'
 
 /**
@@ -46,6 +47,11 @@ export const useIgoContract = (address: string) => {
 export const useVestingContract = (address: string) => {
   const web3 = useWeb3()
   return useMemo(() => getVestingContract(address, web3), [address, web3])
+}
+
+export const useGamefiContract = (address: string) => {
+  const web3 = useWeb3()
+  return useMemo(() => getGamefiContract(address, web3), [address, web3])
 }
 
 export const useIfoV1Contract = (address: string) => {

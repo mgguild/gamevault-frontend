@@ -34,6 +34,12 @@ export const claimVesting = async (vestingContract, account) => {
   return vestingContract.methods.claimAll().send({ from: account })
 }
 
+export const stakeGamefi = async (gamefiContract, account, tier, amount) => {
+  return gamefiContract.methods
+        .stake(tier, getDecimalAmount(amount).toString())
+        .send({ from: account })
+}
+
 export const approveWithAmount = async (lpContract, masterChefContract, account, amount) => {
   return lpContract.methods.approve(masterChefContract.options.address, amount).send({ from: account })
 }

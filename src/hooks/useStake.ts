@@ -3,8 +3,8 @@ import { useWeb3React } from '@web3-react/core'
 import { Contract } from 'web3-eth-contract'
 import { useAppDispatch } from 'state'
 import { updateUserStakedBalance, updateUserBalance } from 'state/actions'
-import { stake, sousStake, sousStakeBnb } from 'utils/callHelpers'
-import { useMasterchef, useSousChef } from './useContract'
+import { stake, sousStake, sousStakeBnb, stakeGamefi } from 'utils/callHelpers'
+import { useMasterchef, useSousChef, useGamefiContract } from './useContract'
 
 const useStake = (pid: number) => {
   const { account } = useWeb3React()
@@ -43,6 +43,21 @@ export const useSousStake = (sousId: number, isUsingBnb = false) => {
   )
 
   return { onStake: handleStake }
+}
+
+export const useGamefiStake = (contractAddress: string) => {
+  const { account } = useWeb3React()
+  const gamefiContract = useGamefiContract(contractAddress)
+
+  const handleStake = useCallback(
+    async (tier: string, amount, contract?: Contract) => {
+      const txHash = await stakeGamefi(contract ?? gamefiContract, account, tier, amount)
+      console.info(txHash)
+    },
+    [account, gamefiContract]
+  )
+
+  return { onGamefiStake: handleStake }
 }
 
 export default useStake

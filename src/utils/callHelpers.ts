@@ -40,6 +40,12 @@ export const stakeGamefi = async (gamefiContract, account, tier, amount) => {
         .send({ from: account })
 }
 
+export const unstakeGamefi = async (gamefiContract, account, id) => {
+  return gamefiContract.methods
+        .unstake(id)
+        .send({ from: account })
+}
+
 export const approveWithAmount = async (lpContract, masterChefContract, account, amount) => {
   return lpContract.methods.approve(masterChefContract.options.address, amount).send({ from: account })
 }

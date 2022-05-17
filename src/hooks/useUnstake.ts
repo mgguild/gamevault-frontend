@@ -2,8 +2,8 @@ import { useCallback } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { useAppDispatch } from 'state'
 import { updateUserBalance, updateUserPendingReward, updateUserStakedBalance } from 'state/actions'
-import { exit, sousEmergencyUnstake, sousUnstake, unstake } from 'utils/callHelpers'
-import { useLPStakingContract, useMasterchef, useSousChef } from './useContract'
+import { exit, sousEmergencyUnstake, sousUnstake, unstake, unstakeGamefi } from 'utils/callHelpers'
+import { useLPStakingContract, useMasterchef, useSousChef, useGamefiContract } from './useContract'
 
 export const useExit = (contract: string) => {
   const { account } = useWeb3React()
@@ -61,6 +61,26 @@ export const useSousUnstake = (sousId, enableEmergencyWithdraw = false) => {
   )
 
   return { onUnstake: handleUnstake }
+}
+
+export const useGamefiUnstake = (sousId: number, contractAddress: string ) => {
+  const dispatch = useAppDispatch()
+  const { account } = useWeb3React()
+  const gamefiContract = useGamefiContract(contractAddress)
+
+  const handleUnstake = useCallback(
+    async (id: number) => {
+      const txHash = await unstakeGamefi(gamefiContract, account, id)
+      console.info(txHash)
+    },
+    [account, gamefiContract]
+  )
+
+  dispatch(updateUserStakedBalance(sousId, account))
+  dispatch(updateUserBalance(sousId, account))
+  dispatch(updateUserPendingReward(sousId, account))
+
+  return { onGamefiUnstake: handleUnstake }
 }
 
 export default useUnstake

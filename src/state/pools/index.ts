@@ -61,7 +61,7 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number) => async (dispat
     const blockLimit = blockLimits.find((entry) => entry.sousId === pool.sousId)
     const totalStaking = totalStakings.find((entry) => entry.sousId === pool.sousId)
     const isPoolEndBlockExceeded = currentBlock > 0 && blockLimit ? currentBlock > Number(blockLimit.endBlock) : false
-    const isPoolFinished = false  // pool.isFinished || isPoolEndBlockExceeded - hard coded for testnet
+    const isPoolFinished =  pool.isFinished || isPoolEndBlockExceeded
 
     const stakingTokenAddress = pool.stakingToken.address ? getAddress(pool.stakingToken.address).toLowerCase() : null
     const stakingTokenPrice = stakingTokenAddress ? prices[stakingTokenAddress] : 0
@@ -131,6 +131,7 @@ export const fetchPoolsUserDataAsync =
 
       // pendingReward: pendingRewards[pool.sousId],
     }))
+    console.log('userData: ', userData)
     dispatch(setPoolsUserData(userData))
   }
 

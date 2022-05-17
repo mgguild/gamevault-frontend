@@ -24,7 +24,7 @@ export const fetchPoolsBlockLimits = async () => {
     }
   })
 
-  // commented out for testnet
+  // commented out for testnet, no startblock & endblack calls on testnet contract
   // const starts = await multicall(sousChefABI, callsStartBlock)
   // const ends = await multicall(sousChefABI, callsEndBlock)
 

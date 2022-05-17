@@ -37,6 +37,7 @@ export interface Farm extends FarmConfig {
     tokenBalance: string
     stakedBalance: string
     earnings: string
+    stakesDetails?: any
   }
 }
 
@@ -54,6 +55,7 @@ export interface Pool extends PoolConfig {
     stakingTokenBalance: BigNumber
     stakedBalance: BigNumber
     pendingReward: BigNumber
+    stakesDetails?: any
   }
 }
 

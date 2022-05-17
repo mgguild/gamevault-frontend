@@ -111,3 +111,21 @@ export const fetchUserTotalStaked = async (account) => {
   )
 
 }
+
+export const fetchUserStakesDetails = async (account) => {
+  const calls = nonMasterPools.map((p) => ({
+    address: getAddress(p.contractAddress),
+    name: 'getAllStakeDetails',
+    params: [account],
+  }))
+
+  const callStakesId = await multicall(gamefiVaultsABI, calls)
+
+  return nonMasterPools.reduce(
+    (acc, pool, index) => ({
+      ...acc,
+      [pool.sousId]: callStakesId[index][0],
+    }),
+    {},
+  )
+}

@@ -18,6 +18,7 @@ import {
   fetchUserStakeBalances,
   fetchUserPendingRewards,
   fetchUserTotalStaked,
+  fetchUserStakesDetails,
 } from './fetchPoolsUser'
 import { fetchPublicVaultData, fetchVaultFees } from './fetchVaultPublic'
 import fetchVaultUser from './fetchVaultUser'
@@ -119,12 +120,15 @@ export const fetchPoolsUserDataAsync =
     // const stakedBalances = await fetchUserStakeBalances(account)
     // const pendingRewards = await fetchUserPendingRewards(account)
     const totalStakes = await fetchUserTotalStaked(account)
+    const stakesDetails = await fetchUserStakesDetails(account)
 
     const userData = poolsConfig.map((pool) => ({
       sousId: pool.sousId,
       allowance: allowances[pool.sousId],
       stakingTokenBalance: stakingTokenBalances[pool.sousId],
       stakedBalance: totalStakes[pool.sousId],
+      stakesDetails: stakesDetails[pool.sousId]
+
       // pendingReward: pendingRewards[pool.sousId],
     }))
     dispatch(setPoolsUserData(userData))

@@ -100,7 +100,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ userDataReady, farm, removed, cakeP
   const stakingAddress = getAddress(farm.stakingAddresses)
 
   const addLiquidityUrl = `${farm.liquidityUrl ?? BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
-  const AddTokenUrl = `${BASE_SWAP_URL}/${farm.token.address[56]}`
+  const AddTokenUrl = `${BASE_SWAP_URL}/${getAddress(farm.token.address)}`
   const lpAddress = farm.lpAddresses[process.env.REACT_APP_CHAIN_ID]
   const isPromotedFarm = farm.token.symbol === 'CAKE'
   const theme = useContext(ThemeContext)

@@ -57,10 +57,10 @@ const FarmCard2: React.FC<FarmCard2Props> = ({
   const lpTotalSupply = getBalanceNumber(new BigNumber(farm.totalDeposits ?? 0))
   const { LPPrice, rewardPrice } = useFarmPrice(
     Number(lpTotalSupply),
-    farm.token.address[56],
-    farm.pairToken.address[56],
-    farm.quoteToken.address[56],
-    farm.lpAddresses[56],
+    getAddress(farm.token.address),
+    getAddress(farm.pairToken.address),
+    getAddress(farm.quoteToken.address),
+    getAddress(farm.lpAddresses),
     isFetchData,
   )
   const prevLPPrice = usePrevious(LPPrice)

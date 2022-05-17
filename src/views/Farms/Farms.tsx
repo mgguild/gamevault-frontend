@@ -25,6 +25,7 @@ import { latinise } from 'utils/latinise'
 import PageHeader from 'components/PageHeader'
 import SearchInput from 'components/SearchInput'
 import Select, { OptionProps } from 'components/Select/Select'
+import { getAddress } from 'utils/addressHelpers'
 import FarmCard, { FarmWithStakedValue } from './components/FarmCard/FarmCard'
 import Table from './components/FarmTable/FarmTable'
 import FarmTabButtons from './components/FarmTabButtons'
@@ -433,10 +434,10 @@ const Farms: React.FC = () => {
   const lpTotalSupply = getBalanceNumber(new BigNumber(mggFarm.totalDeposits ?? 0))
   const { LPPrice, rewardPrice } = useFarmPrice(
     Number(lpTotalSupply),
-    mggFarm.token.address[56],
-    mggFarm.pairToken.address[56],
-    mggFarm.quoteToken.address[56],
-    mggFarm.lpAddresses[56],
+    getAddress(mggFarm.token.address),
+    getAddress(mggFarm.pairToken.address),
+    getAddress(mggFarm.quoteToken.address),
+    getAddress(mggFarm.lpAddresses),
     isFetchData,
   )
   const prevLPPrice = usePrevious(LPPrice)

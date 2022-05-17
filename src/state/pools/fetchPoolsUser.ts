@@ -119,13 +119,30 @@ export const fetchUserStakesDetails = async (account) => {
     params: [account],
   }))
 
-  const callStakesId = await multicall(gamefiVaultsABI, calls)
+  const callStakesDetails = await multicall(gamefiVaultsABI, calls)
+  console.info('callStakesDetails: ', callStakesDetails)
 
-  return nonMasterPools.reduce(
-    (acc, pool, index) => ({
-      ...acc,
-      [pool.sousId]: callStakesId[index][0],
-    }),
-    {},
-  )
+  const parseDetails = {}
+
+  nonMasterPools.forEach((p, index) => {
+    const parseStakes = []
+
+    callStakesDetails[index][0].forEach(detail => {
+      parseStakes.push(
+        {
+          id: new BigNumber(detail.id._hex).toJSON(),
+          owber: detail.owner,
+          tier: new BigNumber(detail.tier._hex).toJSON(),
+          amount: new BigNumber(detail.amount._hex).toJSON(),
+          claimed: new BigNumber(detail.claimed._hex).toJSON(),
+          stakedAt: new BigNumber(detail.stakedAt._hex).toJSON(),
+          lastClaimedAt: new BigNumber(detail.lastClaimedAt._hex).toJSON(),
+        }
+      )
+    })
+
+    parseDetails[p.sousId] = parseStakes
+  })
+
+  return parseDetails
 }

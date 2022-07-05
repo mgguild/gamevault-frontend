@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'
+import React, { useEffect, useState, useContext, useMemo } from 'react'
 import styled, { ThemeContext } from 'styled-components'
-import { Slider, BalanceInput, AutoRenewIcon, Link } from '@pancakeswap/uikit'
+import { Slider, BalanceInput, AutoRenewIcon, Toggle } from '@pancakeswap/uikit'
 import { Modal, Text, Flex, Heading, Image, Button } from '@metagg/mgg-uikit'
 import { useTranslation } from 'contexts/Localization'
 import { BASE_EXCHANGE_URL } from 'config'
@@ -77,6 +77,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
   chainId,
   onDismiss,
 }) => {
+  const theme = useContext(ThemeContext)
   const { toastSuccess, toastError, toastWarning } = useToast()
   const { t } = useTranslation()
   const { onFixedAprPoolStake } = useFixedAprPoolStake(getAddress(currentStake.contractAddress, chainId.toString()))
@@ -119,6 +120,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
   )
   const [pendingTx, setPendingTx] = useState(false)
   const [isApproved, setIsApproved] = useState(false)
+  const [maxApprove, setMaxApprove] = useState(false)
 
   const { handleApprove, requestedApproval } = useSousApproveWithAmount(
     stakingTokenContract,
@@ -127,11 +129,22 @@ const StakeModal: React.FC<StakeModalProps> = ({
     getDecimalAmount(new BigNumber(stakeAmount), currentStake.stakingToken.decimals),
   )
 
+  const { handleApprove: handleMaxApprove, requestedApproval: requestedMaxApproval } = useSousApprove(
+    stakingTokenContract,
+    currentStake.sousId,
+    currentStake.earningToken.symbol,
+  )
+
+  const getApprove = maxApprove ? handleMaxApprove : handleApprove
+  const getRequstedApprove = maxApprove ? requestedMaxApproval : requestedApproval
+
   useEffect(() => {
-    const decimalUserAllowance = getDecimalAmount(totalAllowance.balance, currentStake.stakingToken.decimals)
+    // const decimalUserAllowance = getDecimalAmount(totalAllowance.balance, currentStake.stakingToken.decimals)
+    // console.log('decimalUserAllowance: ', decimalUserAllowance)
+    console.log('stakeAmount: ', getDecimalAmount(new BigNumber(stakeAmount), currentStake.stakingToken.decimals))
     if (totalAllowance.fetchStatus === 'success') {
       setIsApproved(
-        decimalUserAllowance.gte(getDecimalAmount(new BigNumber(stakeAmount), currentStake.stakingToken.decimals)),
+        totalAllowance.balance.gte(getDecimalAmount(new BigNumber(stakeAmount), currentStake.stakingToken.decimals)),
       )
     }
   }, [requestedApproval, totalAllowance, stakeAmount, currentStake])
@@ -148,7 +161,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
             Staking Summary
           </Heading>
         </Flex>
-        <ModalBody>
+        <ModalBody style={{maxWidth: '25.625rem'}}>
           <StyledDetails>
             <Flex>
               <Text>Duration</Text>
@@ -195,21 +208,27 @@ const StakeModal: React.FC<StakeModalProps> = ({
                 ≈{estimatedFee.toFormat()} {pairSymbol}
               </Text>
             </Flex>
-            {isApproved && (
-              <>
-                <br />
-                <br />
-                <Flex>
-                  <Text>Approved {pairSymbol} spending</Text>
+            <br />
+            <br />
+            <Flex>
+              {new BigNumber(65000000000).gte(new BigNumber(getBalanceNumber(totalAllowance.balance, currentStake.stakingToken.decimals))) ?
+                <>
+                  <Text>Remaining approved {pairSymbol} spending</Text>
                   <Text>
                     {new BigNumber(
                       getBalanceNumber(totalAllowance.balance, currentStake.stakingToken.decimals),
                     ).toFormat()}{' '}
                     {pairSymbol}
                   </Text>
-                </Flex>
-              </>
-            )}
+                </>
+                :
+                <>
+                  <Text>Approved {pairSymbol} spending</Text>
+                  <Text>MAX</Text>
+                </>
+              }
+            </Flex>
+
           </StyledDetails>
           {isApproved ? (
             <Button
@@ -223,15 +242,27 @@ const StakeModal: React.FC<StakeModalProps> = ({
               Stake
             </Button>
           ) : (
-            <Button
-              fullWidth
-              isLoading={pendingTx}
-              endIcon={requestedApproval ? <AutoRenewIcon spin color="currentColor" /> : null}
-              onClick={handleApprove}
-              disabled={requestedApproval}
-            >
-              Approve
-            </Button>
+            <>
+              <Flex style={{margin: '0.5rem 0'}}>
+                <Toggle checked={maxApprove} onChange={() => setMaxApprove(!maxApprove)} scale="sm" />
+                <Text marginLeft="10px"> Max Approve</Text>
+              </Flex>
+              {maxApprove &&
+                <Text color={theme.colors.textSubtle}>
+                  Max Approve is a one time approval transaction to save gas for additional staking, that will allot the maximum (≈80B {pairSymbol}) spending allowance for this contract.
+                </Text>
+              }
+              <Button
+                style={{margin: '0.5rem 0'}}
+                fullWidth
+                isLoading={pendingTx}
+                endIcon={getRequstedApprove ? <AutoRenewIcon spin color="currentColor" /> : null}
+                onClick={getApprove}
+                disabled={getRequstedApprove}
+              >
+                Approve
+              </Button>
+            </>
           )}
         </ModalBody>
       </Modal>

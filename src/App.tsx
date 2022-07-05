@@ -70,7 +70,7 @@ const App: React.FC = () => {
               {isChainSupported('GAMEFI', chainId) ? (
                 <Gamefi />
               ) : (
-                <NotSupported title="Gamefi" supportedChainId={getSupportedChain('GAMEFI')} />
+                <NotSupported title="Gamefi Vaults" supportedChainId={getSupportedChain('GAMEFI')} />
               )}
             </Route>
             <Route

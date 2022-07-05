@@ -161,7 +161,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
             Staking Summary
           </Heading>
         </Flex>
-        <ModalBody style={{maxWidth: '25.625rem'}}>
+        <ModalBody style={{ maxWidth: '25.625rem' }}>
           <StyledDetails>
             <Flex>
               <Text>Duration</Text>
@@ -211,7 +211,9 @@ const StakeModal: React.FC<StakeModalProps> = ({
             <br />
             <br />
             <Flex>
-              {new BigNumber(65000000000).gte(new BigNumber(getBalanceNumber(totalAllowance.balance, currentStake.stakingToken.decimals))) ?
+              {new BigNumber(65000000000).gte(
+                new BigNumber(getBalanceNumber(totalAllowance.balance, currentStake.stakingToken.decimals)),
+              ) ? (
                 <>
                   <Text>Remaining approved {pairSymbol} spending</Text>
                   <Text>
@@ -221,14 +223,13 @@ const StakeModal: React.FC<StakeModalProps> = ({
                     {pairSymbol}
                   </Text>
                 </>
-                :
+              ) : (
                 <>
                   <Text>Approved {pairSymbol} spending</Text>
                   <Text>MAX</Text>
                 </>
-              }
+              )}
             </Flex>
-
           </StyledDetails>
           {isApproved ? (
             <Button
@@ -243,17 +244,18 @@ const StakeModal: React.FC<StakeModalProps> = ({
             </Button>
           ) : (
             <>
-              <Flex style={{margin: '0.5rem 0'}}>
+              <Flex style={{ margin: '0.5rem 0' }}>
                 <Toggle checked={maxApprove} onChange={() => setMaxApprove(!maxApprove)} scale="sm" />
                 <Text marginLeft="10px"> Max Approve</Text>
               </Flex>
-              {maxApprove &&
+              {maxApprove && (
                 <Text color={theme.colors.textSubtle}>
-                  Max Approve is a one time approval transaction to save gas for additional staking, that will allot the maximum (≈80B {pairSymbol}) spending allowance for this contract.
+                  Max Approve is a one time approval transaction to save gas for additional staking, that will allot the
+                  maximum (≈80B {pairSymbol}) spending allowance for this contract.
                 </Text>
-              }
+              )}
               <Button
-                style={{margin: '0.5rem 0'}}
+                style={{ margin: '0.5rem 0' }}
                 fullWidth
                 isLoading={pendingTx}
                 endIcon={getRequstedApprove ? <AutoRenewIcon spin color="currentColor" /> : null}

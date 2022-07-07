@@ -208,28 +208,6 @@ const StakeModal: React.FC<StakeModalProps> = ({
                 ≈{estimatedFee.toFormat()} {pairSymbol}
               </Text>
             </Flex>
-            <br />
-            <br />
-            <Flex>
-              {new BigNumber(65000000000).gte(
-                new BigNumber(getBalanceNumber(totalAllowance.balance, currentStake.stakingToken.decimals)),
-              ) ? (
-                <>
-                  <Text>Remaining approved {pairSymbol} spending</Text>
-                  <Text>
-                    {new BigNumber(
-                      getBalanceNumber(totalAllowance.balance, currentStake.stakingToken.decimals),
-                    ).toFormat()}{' '}
-                    {pairSymbol}
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Text>Approved {pairSymbol} spending</Text>
-                  <Text>MAX</Text>
-                </>
-              )}
-            </Flex>
           </StyledDetails>
           {isApproved ? (
             <Button

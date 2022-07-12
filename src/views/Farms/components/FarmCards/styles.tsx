@@ -1,4 +1,5 @@
 import styled, { ThemeContext } from 'styled-components'
+import { Flex } from '@metagg/mgg-uikit'
 
 export const Cards2 = styled.button<{ src?: string; bgColor?: string }>`
   position: relative;
@@ -30,11 +31,15 @@ export const Cards2 = styled.button<{ src?: string; bgColor?: string }>`
 
 export const Card2Container = styled.div`
   position: relative;
-  padding: 1rem 1.5rem;
+  padding: 1rem 0rem;
   // background: linear-gradient(0deg,rgb(0 0 0) 0%,rgb(0 0 0 / 50%) 25%,rgba(36,121,9,0) 75%);
   width: 100%;
   height: 100%;
   z-index: 2;
+
+  ${({theme}) => theme.mediaQueries.md} {
+    padding: 1rem 1.5rem;
+  }
 `
 export const TokenLogo = styled.img<{ size?: string }>`
   border-radius: 50%;
@@ -83,4 +88,8 @@ export const PageContainer = styled.div<{ bgColor?: string; src?: string; contai
   background-position: ${contain ? 'right' : 'center'};
   background-size: contain;
 }`}
+`
+
+export const StyledFlex = styled(Flex)`
+  justify-content: center;
 `

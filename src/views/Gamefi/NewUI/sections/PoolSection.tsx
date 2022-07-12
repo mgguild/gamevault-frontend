@@ -13,7 +13,7 @@ import { getBalanceNumber } from 'utils/formatBalance'
 import UnlockButton from 'components/UnlockButton'
 import RenderSocials from 'components/Launchpad/SocialGroup'
 import { getBscScanAddressUrl } from 'utils/bscscan'
-import { Card2Container, LinearBG, PageContainer, TokenLogo } from 'views/Farms/components/FarmCards/styles'
+import { Card2Container, LinearBG, PageContainer, TokenLogo, StyledFlex } from 'views/Farms/components/FarmCards/styles'
 import InputComponent from '../../components/InputComponent'
 import ListStakesComponent from '../../components/ListStakesComponent'
 import { ChartStyle, FlexC, StatCard, Stats, TableStyle } from '../styled'
@@ -216,6 +216,7 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
     )
   }
 
+  const poolAddress = getAddress(currentPool.stakingToken.address)
   return (
     <PageContainer bgColor={currentPool.UIProps.bgColor} contain={currentPool.UIProps.contain}>
       <LinearBG style={{ minHeight: '100vh' }}>
@@ -229,17 +230,17 @@ const RenderPool: React.FC<{ farmID: string; tblColumns: any }> = ({ farmID, tbl
                 </Heading>
               </Flex>
               <Text color="white">Stake your {currentPool.stakingToken.symbol} tokens for great benefits</Text>
-              <Flex>
+              <StyledFlex>
                 <Text color="white">
                   Token address{' '}
                   <Link
                     style={{ display: 'contents' }}
                     href={getBscScanAddressUrl(getAddress(currentPool.stakingToken.address))}
                   >
-                    {getAddress(currentPool.stakingToken.address)}
+                    { `${poolAddress.substring(0, 5)}...${poolAddress.substring(poolAddress.length-5)}`}
                   </Link>
                 </Text>
-              </Flex>
+              </StyledFlex>
               <RenderSocials socials={currentPool.UIProps.socials} center color="white" size={20} />
             </Flex>
           </Card2Container>

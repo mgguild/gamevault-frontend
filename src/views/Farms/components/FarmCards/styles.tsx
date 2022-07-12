@@ -38,7 +38,7 @@ export const Card2Container = styled.div`
   z-index: 2;
 
   ${({theme}) => theme.mediaQueries.md} {
-    padding: 1rem 1.5rem;
+    padding: 2rem 1.5rem;
   }
 `
 export const TokenLogo = styled.img<{ size?: string }>`
@@ -88,8 +88,4 @@ export const PageContainer = styled.div<{ bgColor?: string; src?: string; contai
   background-position: ${contain ? 'right' : 'center'};
   background-size: contain;
 }`}
-`
-
-export const StyledFlex = styled(Flex)`
-  justify-content: center;
 `

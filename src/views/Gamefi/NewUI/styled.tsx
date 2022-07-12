@@ -1,14 +1,26 @@
 import styled from 'styled-components'
 import { Flex, Button } from '@metagg/mgg-uikit'
 
-export const FlexC = styled(Flex)`
-  padding: 2rem;
+export const FlexC = styled(Flex)<{padding?: string}>`
   flex-flow: row wrap;
   row-gap: 1rem;
   align-content: center;
   align-items: center;
   justify-content: center;
   text-align: center;
+  // max-width: 40rem;
+  font-size: 12px;
+  margin: 0 auto;
+  ${({padding, theme}) => padding && `
+    padding: ${padding};
+    ${theme.mediaQueries.md} {
+      padding: 2rem;
+    }
+  `}
+  ${({theme}) => theme.mediaQueries.md} {
+    font-size: 17px;
+    width: 60vw;
+  }
 `
 
 export const ButtonSM = styled(Button)`
@@ -76,4 +88,9 @@ export const ChartStyle = styled(Flex)`
   .apexcharts-text {
     fill: ${({ theme }) => theme.colors.text};
   }
+`
+
+
+export const StyledFlex = styled(Flex)`
+  justify-content: center;
 `

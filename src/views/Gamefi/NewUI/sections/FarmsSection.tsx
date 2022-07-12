@@ -173,7 +173,7 @@ const RenderFarm: React.FC<{ farmID: string; stakingType?: string; tblColumns: a
       </>
     )
   }
-
+  const farmAddress = getAddress(currentFarm.token.address)
   return (
     <PageContainer bgColor={currentFarm.UIProps.bgColor} contain={currentFarm.UIProps.contain}>
       <LinearBG style={{ minHeight: '100vh' }}>
@@ -188,14 +188,14 @@ const RenderFarm: React.FC<{ farmID: string; stakingType?: string; tblColumns: a
                   </Heading>
                 </Flex>
                 <Text color="white">Hold your {currentFarm.token.symbol} tokens for great benefits</Text>
-                <Flex>
+                <Flex justifyContent='center'>
                   <Text color="white">
                     Token address{' '}
                     <Link
                       style={{ display: 'contents' }}
                       href={getBscScanAddressUrl(getAddress(currentFarm.token.address))}
                     >
-                      {getAddress(currentFarm.token.address)}
+                         { `${farmAddress.substring(0, 5)}...${farmAddress.substring(farmAddress.length-5)}`}
                     </Link>
                   </Text>
                 </Flex>
@@ -205,7 +205,7 @@ const RenderFarm: React.FC<{ farmID: string; stakingType?: string; tblColumns: a
           </>
         </Flex>
         <FlexC>
-          <FlexC style={{ backgroundColor: theme.colors.MGG_mainBG, maxWidth: '40rem', zIndex: 3 }}>
+          <FlexC style={{ backgroundColor: theme.colors.MGG_mainBG, zIndex: 3, }}>
             <Heading style={{ fontSize: '1.875rem' }}>{currentFarm.lpSymbol} Staking Farm</Heading>
             <Text>Deposit your {currentFarm.lpSymbol} Tokens to earn Extra Annual Percentage Rate</Text>
             <Text color={theme.colors.MGG_accent2}>Current APR</Text>

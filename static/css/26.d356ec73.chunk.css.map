@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/views/Marketplace/components/Tab/style.css"],"names":[],"mappings":"AACA,eACE,WAAY,CACZ,mBAAoB,CACpB,yBACF","file":"26.d356ec73.chunk.css","sourcesContent":["\n.tab-btn:focus {\n  border: none;\n  outline: 0!important;\n  box-shadow: none!important;\n}"]}
